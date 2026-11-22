@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-enum class Screen { Intro, Home, Draw, Music, Quiz, Puzzle, Memory, Numbers, Owl3D }
+enum class Screen { Intro, Home, Draw, Coloring, Music, Quiz, Puzzle, Memory, Numbers, Owl3D }
 
 /** Global, persisted app state: age group, stars earned and music on/off. */
 class AppState(context: Context) {

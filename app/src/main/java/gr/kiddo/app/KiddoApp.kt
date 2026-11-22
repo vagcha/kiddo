@@ -46,6 +46,7 @@ fun KiddoApp(appState: AppState) {
                     Screen.Intro -> IntroScreen(onDone = { screen = Screen.Home })
                     Screen.Home -> HomeScreen(onOpen = { screen = it })
                     Screen.Draw -> DrawScreen(onBack = goHome)
+                    Screen.Coloring -> ColoringScreen(onBack = goHome)
                     Screen.Music -> MusicScreen(onBack = goHome)
                     Screen.Quiz -> QuizScreen(onBack = goHome)
                     Screen.Puzzle -> PuzzleScreen(onBack = goHome)

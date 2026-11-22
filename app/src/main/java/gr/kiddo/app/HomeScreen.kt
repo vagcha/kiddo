@@ -41,13 +41,14 @@ private data class Activity(val screen: Screen, val title: String, val icon: Int
 
 private val ACTIVITIES = listOf(
     Activity(Screen.Draw, "Ζωγραφική", R.drawable.ic_draw, KColors.Pink, "Ζωγραφική"),
+    Activity(Screen.Coloring, "Χρωματισμός", R.drawable.color_owl, KColors.Yellow, "Χρωματισμός"),
     Activity(Screen.Music, "Μουσική", R.drawable.ic_music, KColors.Purple, "Μουσική"),
     Activity(Screen.Quiz, "Κουίζ", R.drawable.ic_quiz, KColors.Blue, "Κουίζ"),
     Activity(Screen.Puzzle, "Παζλ", R.drawable.ic_puzzle, KColors.Green, "Παζλ"),
     Activity(Screen.Memory, "Μνήμη", R.drawable.ic_memory, KColors.Teal, "Παιχνίδι μνήμης"),
     Activity(Screen.Numbers, "Μετράμε", R.drawable.ic_numbers, KColors.Orange, "Μετράμε"),
     Activity(Screen.Owl3D, "Σοφούλα 3D", R.drawable.mascot, KColors.Red, "Η Σοφούλα σε τρεις διαστάσεις"),
-    Activity(Screen.Intro, "Βίντεο", R.drawable.mascot, KColors.Yellow, "Βίντεο"),
+    Activity(Screen.Intro, "Βίντεο", R.drawable.mascot, KColors.Teal, "Βίντεο"),
 )
 
 @Composable
