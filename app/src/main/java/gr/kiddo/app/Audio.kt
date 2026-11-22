@@ -155,7 +155,7 @@ object Speaker {
                 val greek = Locale("el", "GR")
                 val res = tts?.setLanguage(greek)
                 if (res == TextToSpeech.LANG_MISSING_DATA || res == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    tts?.language = Locale.getDefault()
+                    tts?.setLanguage(Locale.getDefault())
                 }
                 tts?.setSpeechRate(0.9f)
                 tts?.setPitch(1.15f)
