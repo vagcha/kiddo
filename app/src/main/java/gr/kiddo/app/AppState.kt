@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-enum class Screen { Intro, Home, Draw, Coloring, Music, Quiz, Puzzle, Memory, Numbers, Owl3D }
+enum class Screen { Intro, Home, Draw, Coloring, Music, Quiz, Puzzle, Memory, Numbers, Owl3D, Games, Balloons, Moles, Catch, Simon }
 
 /** Global, persisted app state: age group, stars earned and music on/off. */
 class AppState(context: Context) {
@@ -27,6 +27,17 @@ class AppState(context: Context) {
     fun updateOlder(value: Boolean) {
         older = value
         prefs.edit().putBoolean("older", value).apply()
+    }
+
+    private fun bestKey(game: String) = "best.$game.${if (older) "o" else "y"}"
+
+    fun best(game: String): Int = prefs.getInt(bestKey(game), 0)
+
+    /** Saves the score if it beats the record; returns true for a new record. */
+    fun saveBest(game: String, score: Int): Boolean {
+        if (score <= best(game)) return false
+        prefs.edit().putInt(bestKey(game), score).apply()
+        return true
     }
 
     fun updateMusic(value: Boolean) {

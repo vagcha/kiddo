@@ -37,7 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private data class Activity(val screen: Screen, val title: String, val icon: Int, val color: Color, val speech: String)
+private data class Activity(val screen: Screen, val title: String, val icon: Int, val color: Color, val speech: String, val emoji: String? = null)
 
 private val ACTIVITIES = listOf(
     Activity(Screen.Draw, "Ζωγραφική", R.drawable.ic_draw, KColors.Pink, "Ζωγραφική"),
@@ -48,6 +48,7 @@ private val ACTIVITIES = listOf(
     Activity(Screen.Memory, "Μνήμη", R.drawable.ic_memory, KColors.Teal, "Παιχνίδι μνήμης"),
     Activity(Screen.Numbers, "Μετράμε", R.drawable.ic_numbers, KColors.Orange, "Μετράμε"),
     Activity(Screen.Owl3D, "Σοφούλα 3D", R.drawable.mascot, KColors.Red, "Η Σοφούλα σε τρεις διαστάσεις"),
+    Activity(Screen.Games, "Γρήγορα παιχνίδια", 0, KColors.Red, "Γρήγορα παιχνίδια", emoji = "🎈"),
     Activity(Screen.Intro, "Βίντεο", R.drawable.mascot, KColors.Teal, "Βίντεο"),
 )
 
@@ -160,10 +161,11 @@ private fun ActivityCard(a: Activity, onClick: () -> Unit) {
                     .background(a.color.copy(alpha = 0.18f)),
                 contentAlignment = Alignment.Center
             ) {
-                Image(painterResource(a.icon), null, Modifier.fillMaxSize().padding(8.dp))
+                if (a.emoji != null) Text(a.emoji, fontSize = 64.sp)
+                else Image(painterResource(a.icon), null, Modifier.fillMaxSize().padding(8.dp))
             }
             Text(
-                a.title, fontSize = 22.sp, fontWeight = FontWeight.Black, color = a.color,
+                a.title, fontSize = if (a.title.length > 12) 17.sp else 22.sp, fontWeight = FontWeight.Black, color = a.color,
                 textAlign = TextAlign.Center, modifier = Modifier.padding(bottom = 10.dp)
             )
         }

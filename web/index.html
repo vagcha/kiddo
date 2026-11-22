@@ -195,6 +195,30 @@ canvas { display: block; touch-action: none; }
 .intro h1 { color: var(--yellow); font-family: var(--font-display); font-size: clamp(28px, 8vw, 38px); text-align: center; margin: 0; text-wrap: balance; }
 .intro video { width: 100%; max-width: 100%; aspect-ratio: 1; border-radius: 36px; object-fit: cover; background: #000; }
 
+
+.card .pic .emo { font-size: clamp(48px, 15vw, 72px); line-height: 1; }
+/* quick games */
+.hud { display: flex; gap: 10px; justify-content: center; }
+.pill { background: #fff; border-radius: 999px; padding: 6px 16px; font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; box-shadow: 0 2px 0 var(--line); min-width: 92px; text-align: center; }
+.pill.low { background: var(--red); color: #fff; animation: blink .8s steps(2) infinite; --c: var(--red); }
+.gamecard { border-radius: 26px; background: var(--c); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 14px 8px; box-shadow: 0 6px 0 rgba(0,0,0,.15); aspect-ratio: 1; }
+.gamecard .em { font-size: clamp(48px, 15vw, 70px); line-height: 1.1; }
+.gamecard b { font-family: var(--font-display); font-size: 19px; text-align: center; text-wrap: balance; }
+.gamecard small { font-weight: 700; opacity: .9; }
+.startcard { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(255,255,255,.72); z-index: 5; padding: 18px; }
+.startcard > div { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; max-width: 340px; }
+.startcard p { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 22px; text-wrap: balance; }
+.startcard .count { font-size: 96px; font-family: var(--font-display); color: var(--orange); }
+.holes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 12px; align-content: center; height: 100%; }
+.hole { position: relative; aspect-ratio: 1; max-width: 100%; border-radius: 50% 50% 18px 18px; overflow: hidden; background: radial-gradient(ellipse at 50% 92%, #5b3a1e 0 34%, transparent 35%), linear-gradient(#a8e07a, #7cc85a); }
+.hole img { position: absolute; left: 12%; width: 76%; bottom: 6%; transform: translateY(110%); transition: transform .16s ease-out; }
+.hole.up img { transform: translateY(0); }
+.hole.hit img { transform: translateY(0) scale(1.15) rotate(-8deg); filter: brightness(1.2); }
+.hole.miss { animation: shake .3s; }
+.simon { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; aspect-ratio: 1; width: min(100%, calc(100dvh - 300px)); max-width: 100%; margin: 0 auto; }
+.pad { border-radius: 30px; background: var(--c); opacity: .55; box-shadow: 0 6px 0 rgba(0,0,0,.18); transition: opacity .1s, transform .1s; font-size: 44px; }
+.pad.lit { opacity: 1; transform: scale(1.04); box-shadow: 0 0 0 6px #fff, 0 0 30px var(--c); }
+
 model-viewer { width: 100%; height: 100%; background: radial-gradient(circle at 50% 35%, #fff6d8 0%, #ffd27a 55%, #ff9f5a 100%); --poster-color: transparent; }
 
 /* celebration */
@@ -330,12 +354,12 @@ const hush = () => { try { window.speechSynthesis && speechSynthesis.cancel(); }
 
 /* ---------- shared content ---------- */
 const ANIMALS = [
-  { name: "Γάτα", img: "animal_cat.webp", sound: "Νιάου" },
-  { name: "Σκύλος", img: "animal_dog.webp", sound: "Γαβ γαβ" },
-  { name: "Ελέφαντας", img: "animal_elephant.webp", sound: "Πρρρου" },
-  { name: "Λιοντάρι", img: "animal_lion.webp", sound: "Γρρρ" },
-  { name: "Βάτραχος", img: "animal_frog.webp", sound: "Κουάξ" },
-  { name: "Γουρουνάκι", img: "animal_pig.webp", sound: "Οινκ" },
+  { name: "Γάτα", acc: "τη γάτα", img: "animal_cat.webp", sound: "Νιάου" },
+  { name: "Σκύλος", acc: "τον σκύλο", img: "animal_dog.webp", sound: "Γαβ γαβ" },
+  { name: "Ελέφαντας", acc: "τον ελέφαντα", img: "animal_elephant.webp", sound: "Πρρρου" },
+  { name: "Λιοντάρι", acc: "το λιοντάρι", img: "animal_lion.webp", sound: "Γρρρ" },
+  { name: "Βάτραχος", acc: "τον βάτραχο", img: "animal_frog.webp", sound: "Κουάξ" },
+  { name: "Γουρουνάκι", acc: "το γουρουνάκι", img: "animal_pig.webp", sound: "Οινκ" },
 ];
 const NUM = ["μηδέν","ένα","δύο","τρία","τέσσερα","πέντε","έξι","επτά","οκτώ","εννιά","δέκα","έντεκα","δώδεκα","δεκατρία","δεκατέσσερα","δεκαπέντε","δεκαέξι","δεκαεπτά","δεκαοκτώ","δεκαεννιά","είκοσι"];
 const starsFor = (score, total) => (score >= total ? 3 : score * 3 >= total * 2 ? 2 : 1);
@@ -435,6 +459,7 @@ const ACTIVITIES = [
   ["memory", "Μνήμη", "ic_memory.webp", "var(--teal)", "Παιχνίδι μνήμης"],
   ["numbers", "Μετράμε", "ic_numbers.webp", "var(--orange)", "Μετράμε"],
   ["owl", "Σοφούλα 3D", "mascot.webp", "var(--red)", "Η Σοφούλα σε τρεις διαστάσεις"],
+  ["games", "Γρήγορα παιχνίδια", "emoji:🎈", "var(--red)", "Γρήγορα παιχνίδια"],
   ["intro", "Βίντεο", "mascot.webp", "var(--teal)", "Βίντεο"],
 ];
 ROUTES.home = () => {
@@ -458,7 +483,7 @@ ROUTES.home = () => {
     h("div", { class: "age", role: "group", "aria-label": "Ηλικία" }, h("span", {}, "Ηλικία:"), ageBtn("5–7", false), ageBtn("8–10", true)),
     h("div", { class: "grid fill" }, ACTIVITIES.map(([r, t, img, c, sp]) =>
       h("button", { class: "card", style: `--c:${c}`, onclick: () => { sfx.pop(); say(sp); go(r); } },
-        h("div", { class: "pic" }, h("img", { src: A(img), alt: "" })), h("b", {}, t)))));
+        h("div", { class: "pic" }, img.startsWith("emoji:") ? h("span", { class: "emo" }, img.slice(6)) : h("img", { src: A(img), alt: "" })), h("b", {}, t)))));
   $app.replaceChildren(view);
 };
 
@@ -829,6 +854,289 @@ ROUTES.numbers = () => {
       h("div", { class: "groups fill" }, groupEls), h("div", { class: "nums" }, btns));
   }
   show();
+};
+
+
+/* ---------- quick games (timed) ---------- */
+const GAMES = [
+  ["balloons", "Φούσκες", "🎈", "var(--red)"],
+  ["moles", "Βρες το ζωάκι", "🐸", "var(--green)"],
+  ["catch", "Πιάσε τα φρούτα", "🍎", "var(--orange)"],
+  ["simon", "Θυμήσου τη σειρά", "🎵", "var(--purple)"],
+];
+const bestKey = (g) => `best.${g}.${S.older ? "o" : "y"}`;
+ROUTES.games = () => {
+  const view = frame("Γρήγορα παιχνίδια", "var(--red)", "Διάλεξε παιχνίδι!");
+  say("Διάλεξε παιχνίδι!");
+  view.append(h("div", { class: "pick fill" }, GAMES.map(([r, t, em, c]) =>
+    h("button", { class: "gamecard", style: `--c:${c}`, onclick: () => { sfx.pop(); say(t); go(r); } },
+      h("span", { class: "em" }, em), h("b", {}, t), h("small", {}, `Ρεκόρ: ${store.get(bestKey(r), 0)}`)))));
+};
+
+function gameHud(view, withTime = true) {
+  const time = h("div", { class: "pill", "aria-label": "Χρόνος" }), score = h("div", { class: "pill", "aria-label": "Πόντοι" });
+  view.append(h("div", { class: "hud" }, withTime ? time : null, score));
+  return {
+    time(s) { time.textContent = `⏱ ${s}`; time.classList.toggle("low", s <= 5); },
+    score(n, label = "⭐") { score.textContent = `${label} ${n}`; },
+  };
+}
+/* Instruction card with a 3-2-1 countdown, then onStart(). */
+function startCard(panel, text, onStart) {
+  const btn = h("button", { class: "btn", style: "--c:var(--green);width:220px;font-size:24px" }, "Ξεκίνα!");
+  const inner = h("div", {}, h("p", {}, text), btn);
+  const card = h("div", { class: "startcard" }, inner);
+  panel.append(card);
+  say(text);
+  btn.onclick = async () => {
+    hush();
+    for (const n of ["3", "2", "1"]) {
+      inner.replaceChildren(h("div", { class: "count" }, n)); note(N.C5, 0.25); await sleep(650);
+      if (!card.isConnected) return;
+    }
+    note(N.C6, 0.4); card.remove(); onStart();
+  };
+}
+function countdown(seconds, hud, onEnd) {
+  let left = seconds; hud.time(left);
+  const id = setInterval(() => { left--; hud.time(left); if (left <= 5 && left > 0) note(N.G5, 0.12); if (left <= 0) { clearInterval(id); onEnd(); } }, 1000);
+  onLeave(() => clearInterval(id));
+}
+function finishGame(game, score, t2, t3, msg) {
+  const key = bestKey(game), best = store.get(key, 0), record = score > best;
+  if (record) store.set(key, score);
+  const stars = score >= t3 ? 3 : score >= t2 ? 2 : 1;
+  addStars(stars);
+  celebrate(stars, msg + (record && score > 0 ? " Νέο ρεκόρ!" : ""), () => ROUTES[game]());
+}
+function gameCanvas(panel, draw) {
+  const cv = h("canvas"); panel.append(cv);
+  const g = cv.getContext("2d"); const dim = { w: 0, h: 0 };
+  const resize = () => { const d = window.devicePixelRatio || 1; dim.w = panel.clientWidth; dim.h = panel.clientHeight; cv.width = dim.w * d; cv.height = dim.h * d; cv.style.width = dim.w + "px"; cv.style.height = dim.h + "px"; g.setTransform(d, 0, 0, d, 0, 0); };
+  const ro = new ResizeObserver(resize); ro.observe(panel); resize();
+  let raf = 0, last = performance.now(), alive = true;
+  const loop = (t) => { if (!alive) return; const dt = Math.min(0.05, (t - last) / 1000); last = t; draw(g, dim, dt); raf = requestAnimationFrame(loop); };
+  raf = requestAnimationFrame(loop);
+  onLeave(() => { alive = false; cancelAnimationFrame(raf); ro.disconnect(); });
+  return { cv, dim };
+}
+function burst(parts, x, y, color) {
+  for (let i = 0; i < 14; i++) { const a = Math.random() * Math.PI * 2, v = 80 + Math.random() * 160; parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 0.6, c: color }); }
+}
+function drawParts(g, parts, dt) {
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i]; p.life -= dt; if (p.life <= 0) { parts.splice(i, 1); continue; }
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 300 * dt;
+    g.globalAlpha = Math.max(0, p.life / 0.6); g.fillStyle = p.c; g.beginPath(); g.arc(p.x, p.y, 5, 0, 7); g.fill();
+  }
+  g.globalAlpha = 1;
+}
+
+/* Balloons: pop the target colour (5–7) or the right answer (8–10) */
+const BCOL = [["κόκκινες", "#f2453d"], ["μπλε", "#3d8bff"], ["κίτρινες", "#ffc928"], ["πράσινες", "#2fae52"], ["μωβ", "#8e44ec"]];
+ROUTES.balloons = () => {
+  const older = S.older;
+  let target, score = 0, running = false, spawnT = 0, elapsed = 0, hits = 0;
+  const balloons = [], parts = [];
+  const view = frame("Φούσκες", "var(--red)", () => targetSpeech());
+  const hud = gameHud(view); hud.time(45); hud.score(0);
+  const banner = h("p", { class: "prompt" });
+  const panel = h("div", { class: "panel fill", style: "background:linear-gradient(#bfe6ff,#fff8ec)" });
+  view.append(banner, panel);
+  function newTarget() {
+    if (!older) { let t; do { t = rnd(0, BCOL.length - 1); } while (t === target); target = t; banner.innerHTML = ""; banner.append("Σπάσε τις ", h("span", { style: `color:${BCOL[t][1]};-webkit-text-stroke:1px #0002` }, BCOL[t][0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()), "!"); }
+    else {
+      const k = rnd(0, 2); let a, b, ans, txt;
+      if (k === 0) { a = rnd(2, 12); b = rnd(2, 12); ans = a + b; txt = `${a} + ${b}`; }
+      else if (k === 1) { a = rnd(8, 20); b = rnd(1, a - 1); ans = a - b; txt = `${a} − ${b}`; }
+      else { a = rnd(2, 6); b = rnd(2, 6); ans = a * b; txt = `${a} × ${b}`; }
+      target = { ans, txt, a, b, k }; banner.textContent = `Βρες τη φούσκα: ${txt} = ?`;
+    }
+  }
+  const targetSpeech = () => older ? `Σπάσε τη φούσκα με το αποτέλεσμα του ${target.a} ${["συν", "μείον", "επί"][target.k]} ${target.b}` : `Σπάσε τις ${BCOL[target][0]} φούσκες!`;
+  newTarget();
+  function spawn(dim) {
+    const r = Math.max(26, Math.min(44, dim.w / 9));
+    const b = { x: r + Math.random() * (dim.w - 2 * r), y: dim.h + r * 1.4, r, vy: (55 + Math.random() * 45) * (1 + elapsed / 45) * (older ? 1.2 : 1), wob: Math.random() * 6 };
+    if (!older) b.c = Math.random() < 0.42 ? target : rnd(0, BCOL.length - 1);
+    else { b.c = rnd(0, BCOL.length - 1); b.n = Math.random() < 0.38 ? target.ans : Math.max(0, target.ans + pickOne([-3, -2, -1, 1, 2, 3, 5])); }
+    balloons.push(b);
+  }
+  const good = (b) => (older ? b.n === target.ans : b.c === target);
+  const { cv } = gameCanvas(panel, (g, dim, dt) => {
+    g.clearRect(0, 0, dim.w, dim.h);
+    if (running) {
+      elapsed += dt; spawnT -= dt;
+      if (spawnT <= 0) { spawn(dim); spawnT = older ? 0.5 : 0.62; }
+    }
+    for (let i = balloons.length - 1; i >= 0; i--) {
+      const b = balloons[i]; b.y -= b.vy * dt; b.wob += dt * 2;
+      if (b.y < -b.r * 2) { balloons.splice(i, 1); continue; }
+      const x = b.x + Math.sin(b.wob) * 6, y = b.y, col = BCOL[b.c][1];
+      g.strokeStyle = "#8a8199"; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x, y + b.r * 1.2); g.quadraticCurveTo(x + 8, y + b.r * 1.7, x, y + b.r * 2.2); g.stroke();
+      g.fillStyle = col; g.beginPath(); g.moveTo(x - 6, y + b.r * 1.28); g.lineTo(x + 6, y + b.r * 1.28); g.lineTo(x, y + b.r * 1.14); g.fill();
+      const gr = g.createRadialGradient(x - b.r * 0.35, y - b.r * 0.45, b.r * 0.1, x, y, b.r * 1.25);
+      gr.addColorStop(0, "#ffffffcc"); gr.addColorStop(0.25, col); gr.addColorStop(1, col);
+      g.fillStyle = gr; g.beginPath(); g.ellipse(x, y, b.r, b.r * 1.2, 0, 0, 7); g.fill();
+      if (b.n != null) { g.fillStyle = "#fff"; g.font = `800 ${Math.round(b.r * 0.85)}px Manrope, sans-serif`; g.textAlign = "center"; g.textBaseline = "middle"; g.lineWidth = 4; g.strokeStyle = "#0004"; g.strokeText(b.n, x, y); g.fillText(b.n, x, y); }
+      b.sx = x;
+    }
+    drawParts(g, parts, dt);
+  });
+  cv.addEventListener("pointerdown", (e) => {
+    if (!running) return;
+    const r = cv.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+    for (let i = balloons.length - 1; i >= 0; i--) {
+      const b = balloons[i], dx = (px - b.sx) / b.r, dy = (py - b.y) / (b.r * 1.2);
+      if (dx * dx + dy * dy <= 1.25) {
+        balloons.splice(i, 1); burst(parts, b.sx, b.y, BCOL[b.c][1]); note(N.G5 * 1.5, 0.15);
+        if (good(b)) { score++; hits++; hud.score(score); sfx.ok(); if (older || hits % 5 === 0) { newTarget(); say(older ? target.txt.replace("−", "μείον").replace("×", "επί").replace("+", "συν") : `Τώρα σπάσε τις ${BCOL[target][0]}!`); } }
+        else sfx.no();
+        return;
+      }
+    }
+  });
+  startCard(panel, older ? "Σπάσε τη φούσκα με το σωστό αποτέλεσμα! Έχεις 45 δευτερόλεπτα." : "Σπάσε τις φούσκες με το χρώμα που λέω! Έχεις 45 δευτερόλεπτα.", () => {
+    running = true; say(targetSpeech());
+    countdown(45, hud, () => { running = false; finishGame("balloons", score, 8, 15, `Έσπασες ${score} φούσκες!`); });
+  });
+};
+
+/* Whack-an-animal: tap the animal you are asked for */
+ROUTES.moles = () => {
+  const older = S.older;
+  let target = pickOne(ANIMALS), score = 0, running = false, hits = 0;
+  const view = frame("Βρες το ζωάκι", "var(--green)", () => `Πάτα ${target.acc}!`);
+  const hud = gameHud(view); hud.time(40); hud.score(0);
+  const banner = h("p", { class: "prompt" });
+  const holes = Array.from({ length: 9 }, (_, i) => {
+    const img = h("img", { alt: "" });
+    const hole = h("button", { class: "hole", "aria-label": `Τρύπα ${i + 1}` }, img);
+    hole.state = null;
+    hole.addEventListener("pointerdown", (e) => { e.preventDefault(); whack(hole); });
+    return hole;
+  });
+  const panel = h("div", { class: "panel fill", style: "background:#d8f3c2" }, h("div", { class: "holes" }, holes));
+  view.append(banner, panel);
+  const setBanner = () => { banner.textContent = `Πάτα ${target.acc}!`; };
+  setBanner();
+  function whack(hole) {
+    if (!running || !hole.state || hole.state.hit) return;
+    if (hole.state.a === target) {
+      score++; hits++; hud.score(score); sfx.ok(); hole.state.hit = true; hole.classList.add("hit");
+      setTimeout(() => hide(hole), 250);
+      if (hits % 3 === 0) { let t; do { t = pickOne(ANIMALS); } while (t === target); target = t; setBanner(); say(`Τώρα πάτα ${target.acc}!`); }
+    } else { sfx.no(); hole.classList.add("miss"); setTimeout(() => hole.classList.remove("miss"), 300); }
+  }
+  function hide(hole) { hole.classList.remove("up", "hit"); hole.state = null; }
+  let elapsed = 0;
+  async function loop() {
+    while (running) {
+      const free = holes.filter((x) => !x.state);
+      if (free.length) {
+        const hole = pickOne(free), a = Math.random() < 0.45 ? target : pickOne(ANIMALS);
+        hole.state = { a }; hole.querySelector("img").src = A(a.img); hole.querySelector("img").alt = a.name;
+        requestAnimationFrame(() => hole.classList.add("up"));
+        const stay = Math.max(older ? 650 : 950, (older ? 1150 : 1600) - elapsed * 15);
+        setTimeout(() => { if (hole.state && hole.state.a === a && !hole.state.hit) hide(hole); }, stay);
+      }
+      const gap = Math.max(older ? 280 : 420, (older ? 650 : 900) - elapsed * 10);
+      await sleep(gap); elapsed += gap / 1000;
+    }
+  }
+  onLeave(() => { running = false; });
+  startCard(panel, "Τα ζωάκια πετάγονται από τις τρύπες. Πάτα μόνο αυτό που σου λέω! Έχεις 40 δευτερόλεπτα.", () => {
+    running = true; say(`Πάτα ${target.acc}!`); loop();
+    countdown(40, hud, () => { running = false; holes.forEach(hide); finishGame("moles", score, 6, 12, `Βρήκες ${score} ζωάκια!`); });
+  });
+};
+
+/* Catch the fruit with the basket (8–10: avoid the bees) */
+const FRUITS = ["🍎", "🍌", "🍓", "🍊", "🍇", "🍉", "🍐", "🍒"];
+ROUTES.catch = () => {
+  const older = S.older;
+  let score = 0, running = false, spawnT = 0, elapsed = 0, bx = 0.5, flash = 0;
+  const items = [], parts = [];
+  const view = frame("Πιάσε τα φρούτα", "var(--orange)", older ? "Πιάσε τα φρούτα με το καλάθι. Πρόσεχε τις μέλισσες!" : "Πιάσε τα φρούτα με το καλάθι!");
+  const hud = gameHud(view); hud.time(40); hud.score(0, "🧺");
+  const panel = h("div", { class: "panel fill", style: "background:linear-gradient(#bfe6ff 0%,#e8f7ff 70%,#9ad77a 70%)" });
+  view.append(h("p", { class: "muted center", style: "margin:0" }, "Σύρε το δάχτυλο δεξιά–αριστερά"), panel);
+  const { cv } = gameCanvas(panel, (g, dim, dt) => {
+    g.clearRect(0, 0, dim.w, dim.h);
+    const size = Math.max(34, Math.min(52, dim.w / 9)), basketY = dim.h - size * 1.1, basketX = bx * dim.w;
+    if (running) {
+      elapsed += dt; spawnT -= dt;
+      if (spawnT <= 0) {
+        spawnT = Math.max(0.38, 0.85 - elapsed * 0.01);
+        const bee = older && Math.random() < 0.25;
+        items.push({ x: size / 2 + Math.random() * (dim.w - size), y: -size, vy: (120 + Math.random() * 80) * (1 + elapsed / 50), e: bee ? "🐝" : pickOne(FRUITS), bee, rot: Math.random() * 6 });
+      }
+    }
+    g.textAlign = "center"; g.textBaseline = "middle";
+    for (let i = items.length - 1; i >= 0; i--) {
+      const it = items[i]; it.y += it.vy * dt; it.rot += dt * (it.bee ? 10 : 1.5);
+      if (it.y > dim.h + size) { items.splice(i, 1); continue; }
+      if (running && it.y > basketY - size * 0.6 && it.y < basketY + size * 0.3 && Math.abs(it.x - basketX) < size * 1.1) {
+        items.splice(i, 1);
+        if (it.bee) { score = Math.max(0, score - 2); sfx.no(); flash = 0.35; burst(parts, it.x, it.y, "#ffc928"); }
+        else { score++; note(N.C5 * (1 + (score % 8) * 0.12), 0.25); burst(parts, it.x, it.y, "#ff8a00"); }
+        hud.score(score, "🧺"); continue;
+      }
+      g.save(); g.translate(it.x + (it.bee ? Math.sin(it.rot) * 10 : 0), it.y); g.rotate(it.bee ? 0 : Math.sin(it.rot) * 0.3);
+      g.font = `${size}px system-ui, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`; g.fillText(it.e, 0, 0); g.restore();
+    }
+    g.font = `${size * 1.7}px system-ui, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+    g.fillText("🧺", basketX, basketY);
+    if (flash > 0) { flash -= dt; g.fillStyle = `rgba(242,69,61,${flash})`; g.fillRect(0, 0, dim.w, dim.h); }
+    drawParts(g, parts, dt);
+  });
+  const move = (e) => { const r = cv.getBoundingClientRect(); bx = Math.min(0.94, Math.max(0.06, (e.clientX - r.left) / r.width)); };
+  cv.addEventListener("pointerdown", (e) => { cv.setPointerCapture(e.pointerId); move(e); });
+  cv.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "mouse") move(e); });
+  startCard(panel, older ? "Πιάσε τα φρούτα με το καλάθι. Πρόσεχε τις μέλισσες, σου παίρνουν πόντους!" : "Σύρε το καλάθι και πιάσε όσα φρούτα μπορείς!", () => {
+    running = true;
+    countdown(40, hud, () => { running = false; finishGame("catch", score, 10, 20, `Μάζεψες ${score} φρούτα!`); });
+  });
+};
+
+/* Simon: repeat the growing sequence of colours and notes */
+ROUTES.simon = () => {
+  const older = S.older;
+  const PADS = [["var(--red)", N.C5, "🍓"], ["var(--blue)", N.E5, "🐳"], ["var(--yellow)", N.G5, "🌞"], ["var(--green)", N.C6, "🐸"]];
+  let seq = [], pos = 0, accepting = false, best = 0;
+  const view = frame("Θυμήσου τη σειρά", "var(--purple)", "Κοίτα ποια κουμπιά ανάβουν και πάτα τα με την ίδια σειρά!");
+  const hud = gameHud(view, false); hud.score(0, "Σειρά:");
+  const status = h("p", { class: "prompt" }, "Κοίτα και άκου…");
+  const pads = PADS.map(([c, f, em], i) => {
+    const b = h("button", { class: "pad", style: `--c:${c}`, "aria-label": `Κουμπί ${i + 1}` }, em);
+    b.addEventListener("pointerdown", (e) => { e.preventDefault(); press(i); });
+    return b;
+  });
+  const panel = h("div", { class: "fill", style: "display:grid;place-items:center;position:relative;border-radius:26px" }, h("div", { class: "simon" }, pads));
+  view.append(status, panel);
+  let alive = true; onLeave(() => { alive = false; });
+  const light = async (i, ms) => { pads[i].classList.add("lit"); note(PADS[i][1], ms / 1000 + 0.2); await sleep(ms); pads[i].classList.remove("lit"); };
+  async function playSeq() {
+    accepting = false; status.textContent = "Κοίτα και άκου…";
+    await sleep(600);
+    const ms = Math.max(older ? 260 : 380, (older ? 480 : 620) - seq.length * 15);
+    for (const i of seq) { if (!alive) return; await light(i, ms); await sleep(120); }
+    pos = 0; accepting = true; status.textContent = "Σειρά σου!";
+  }
+  function next() { seq.push(rnd(0, 3)); hud.score(seq.length - 1, "Σειρά:"); playSeq(); }
+  async function press(i) {
+    if (!accepting) return;
+    light(i, 220);
+    if (i !== seq[pos]) {
+      accepting = false; sfx.no(); status.textContent = "Ωχ! Λάθος κουμπί";
+      best = seq.length - 1; await sleep(700);
+      finishGame("simon", best, older ? 4 : 3, older ? 7 : 5, `Θυμήθηκες ${best} στη σειρά!`);
+      return;
+    }
+    pos++;
+    if (pos >= seq.length) { accepting = false; hud.score(seq.length, "Σειρά:"); await sleep(250); sfx.ok(); await sleep(400); if (alive) next(); }
+  }
+  startCard(panel, "Κοίτα ποια κουμπιά ανάβουν και πάτα τα με την ίδια σειρά!", () => next());
 };
 
 /* ---------- 3D owl ---------- */

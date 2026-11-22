@@ -27,7 +27,7 @@ fun KiddoApp(appState: AppState) {
 
     BackHandler(enabled = screen != Screen.Home && screen != Screen.Intro) {
         Speaker.stop()
-        screen = Screen.Home
+        screen = if (screen in setOf(Screen.Balloons, Screen.Moles, Screen.Catch, Screen.Simon)) Screen.Games else Screen.Home
     }
 
     val goHome = {
@@ -53,6 +53,11 @@ fun KiddoApp(appState: AppState) {
                     Screen.Memory -> MemoryScreen(onBack = goHome)
                     Screen.Numbers -> NumbersScreen(onBack = goHome)
                     Screen.Owl3D -> Owl3DScreen(onBack = goHome)
+                    Screen.Games -> GamesHub(onBack = goHome, onOpen = { screen = it })
+                    Screen.Balloons -> BalloonsGame(onBack = { screen = Screen.Games }, onHome = goHome)
+                    Screen.Moles -> MolesGame(onBack = { screen = Screen.Games }, onHome = goHome)
+                    Screen.Catch -> CatchGame(onBack = { screen = Screen.Games }, onHome = goHome)
+                    Screen.Simon -> SimonGame(onBack = { screen = Screen.Games }, onHome = goHome)
                 }
             }
         }

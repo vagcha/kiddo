@@ -306,15 +306,15 @@ fun starsFor(score: Int, total: Int): Int = when {
     else -> 1
 }
 
-data class Animal(val name: String, val res: Int, val sound: String, val article: String)
+data class Animal(val name: String, val res: Int, val sound: String, val article: String, val acc: String)
 
 val ANIMALS = listOf(
-    Animal("Γάτα", R.drawable.animal_cat, "Νιάου", "η γάτα"),
-    Animal("Σκύλος", R.drawable.animal_dog, "Γαβ γαβ", "ο σκύλος"),
-    Animal("Ελέφαντας", R.drawable.animal_elephant, "Πρρρου", "ο ελέφαντας"),
-    Animal("Λιοντάρι", R.drawable.animal_lion, "Γρρρ", "το λιοντάρι"),
-    Animal("Βάτραχος", R.drawable.animal_frog, "Κουάξ", "ο βάτραχος"),
-    Animal("Γουρουνάκι", R.drawable.animal_pig, "Οινκ", "το γουρουνάκι"),
+    Animal("Γάτα", R.drawable.animal_cat, "Νιάου", "η γάτα", "τη γάτα"),
+    Animal("Σκύλος", R.drawable.animal_dog, "Γαβ γαβ", "ο σκύλος", "τον σκύλο"),
+    Animal("Ελέφαντας", R.drawable.animal_elephant, "Πρρρου", "ο ελέφαντας", "τον ελέφαντα"),
+    Animal("Λιοντάρι", R.drawable.animal_lion, "Γρρρ", "το λιοντάρι", "το λιοντάρι"),
+    Animal("Βάτραχος", R.drawable.animal_frog, "Κουάξ", "ο βάτραχος", "τον βάτραχο"),
+    Animal("Γουρουνάκι", R.drawable.animal_pig, "Οινκ", "το γουρουνάκι", "το γουρουνάκι"),
 )
 
 val NUMBER_WORDS = listOf(
