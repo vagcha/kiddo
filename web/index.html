@@ -1052,7 +1052,9 @@ ROUTES.moles = () => {
 };
 
 /* Catch the fruit with the basket (8–10: avoid the bees) */
-const FRUITS = ["🍎", "🍌", "🍓", "🍊", "🍇", "🍉", "🍐", "🍒"];
+const FRUITS = ["apple", "banana", "strawberry", "orange", "grapes", "watermelon", "pear", "cherries"].map((n) => { const i = new Image(); i.src = A(`fruit_${n}.webp`); return i; });
+const BEE_IMG = new Image(); BEE_IMG.src = A("game_bee.webp");
+const BASKET_IMG = new Image(); BASKET_IMG.src = A("game_basket.webp");
 ROUTES.catch = () => {
   const older = S.older;
   let score = 0, running = false, spawnT = 0, elapsed = 0, bx = 0.5, flash = 0;
@@ -1069,7 +1071,7 @@ ROUTES.catch = () => {
       if (spawnT <= 0) {
         spawnT = Math.max(0.38, 0.85 - elapsed * 0.01);
         const bee = older && Math.random() < 0.25;
-        items.push({ x: size / 2 + Math.random() * (dim.w - size), y: -size, vy: (120 + Math.random() * 80) * (1 + elapsed / 50), e: bee ? "🐝" : pickOne(FRUITS), bee, rot: Math.random() * 6 });
+        items.push({ x: size / 2 + Math.random() * (dim.w - size), y: -size, vy: (120 + Math.random() * 80) * (1 + elapsed / 50), img: bee ? BEE_IMG : pickOne(FRUITS), bee, rot: Math.random() * 6 });
       }
     }
     g.textAlign = "center"; g.textBaseline = "middle";
@@ -1083,10 +1085,10 @@ ROUTES.catch = () => {
         hud.score(score, "🧺"); continue;
       }
       g.save(); g.translate(it.x + (it.bee ? Math.sin(it.rot) * 10 : 0), it.y); g.rotate(it.bee ? 0 : Math.sin(it.rot) * 0.3);
-      g.font = `${size}px system-ui, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`; g.fillText(it.e, 0, 0); g.restore();
+      if (it.img.complete) g.drawImage(it.img, -size / 2, -size / 2, size, size); g.restore();
     }
-    g.font = `${size * 1.7}px system-ui, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
-    g.fillText("🧺", basketX, basketY);
+    const bw = size * 2.1;
+    if (BASKET_IMG.complete) g.drawImage(BASKET_IMG, basketX - bw / 2, basketY - bw * 0.55, bw, bw);
     if (flash > 0) { flash -= dt; g.fillStyle = `rgba(242,69,61,${flash})`; g.fillRect(0, 0, dim.w, dim.h); }
     drawParts(g, parts, dt);
   });

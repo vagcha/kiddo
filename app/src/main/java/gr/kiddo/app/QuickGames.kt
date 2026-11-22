@@ -40,6 +40,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -55,6 +57,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -77,7 +80,7 @@ private data class QuickGame(val screen: Screen, val key: String, val title: Str
 private val QUICK_GAMES = listOf(
     QuickGame(Screen.Balloons, "balloons", "Φούσκες", "🎈", KColors.Red),
     QuickGame(Screen.Moles, "moles", "Βρες το ζωάκι", "🐸", KColors.Green),
-    QuickGame(Screen.Catch, "catch", "Πιάσε τα φρούτα", "🍎", KColors.Orange),
+    QuickGame(Screen.Catch, "catch", "Πιάσε τα φρούτα", "🍓", KColors.Orange),
     QuickGame(Screen.Simon, "simon", "Θυμήσου τη σειρά", "🎵", KColors.Purple),
 )
 
@@ -559,15 +562,20 @@ private fun Hole(state: HoleState?, modifier: Modifier, onTap: () -> Unit) {
 /* Catch the fruit                                                     */
 /* ------------------------------------------------------------------ */
 
-private val FRUITS = listOf("🍎", "🍌", "🍓", "🍊", "🍇", "🍉", "🍐", "🍒")
+private val FRUITS = listOf(
+    R.drawable.fruit_apple, R.drawable.fruit_banana, R.drawable.fruit_strawberry, R.drawable.fruit_orange,
+    R.drawable.fruit_grapes, R.drawable.fruit_watermelon, R.drawable.fruit_pear, R.drawable.fruit_cherries,
+)
 
-private class Falling(val x: Float, var y: Float, val vy: Float, val emoji: String, val bee: Boolean, var rot: Float)
+private class Falling(val x: Float, var y: Float, val vy: Float, val img: Int, val bee: Boolean, var rot: Float)
 
 @Composable
 fun CatchGame(onBack: () -> Unit, onHome: () -> Unit) = Replayable { restart ->
     val app = LocalAppState.current
     val older = app.older
-    val measurer = rememberTextMeasurer()
+    val fruitImgs = FRUITS.map { ImageBitmap.imageResource(it) }
+    val beeImg = ImageBitmap.imageResource(R.drawable.game_bee)
+    val basketImg = ImageBitmap.imageResource(R.drawable.game_basket)
     val items = remember { mutableListOf<Falling>() }
     val parts = remember { mutableListOf<Particle>() }
     var frame by remember { mutableLongStateOf(0L) }
@@ -598,7 +606,7 @@ fun CatchGame(onBack: () -> Unit, onHome: () -> Unit) = Replayable { restart ->
                     Falling(
                         s / 2 + Random.nextFloat() * (w - s), -s,
                         (330f + Random.nextFloat() * 220f) * (1f + elapsed / 50f),
-                        if (bee) "🐝" else FRUITS.random(), bee, Random.nextFloat() * 6f
+                        if (bee) -1 else FRUITS.indices.random(), bee, Random.nextFloat() * 6f
                     )
                 )
             }
@@ -665,18 +673,22 @@ fun CatchGame(onBack: () -> Unit, onHome: () -> Unit) = Replayable { restart ->
                 ) {
                     if (frame < 0) return@Canvas
                     val s = (size.width / 9f).coerceIn(90f, 140f)
-                    val emojiStyle = TextStyle(fontSize = (s / density).sp)
+                    val px = s.toInt()
                     items.forEach { f ->
-                        val layout = measurer.measure(f.emoji, emojiStyle)
+                        val img = if (f.bee) beeImg else fruitImgs[f.img]
                         val dx = if (f.bee) sin(f.rot) * 24f else 0f
-                        translate(f.x + dx - layout.size.width / 2f, f.y - layout.size.height / 2f) {
-                            rotate(if (f.bee) 0f else sin(f.rot) * 17f, pivot = Offset(layout.size.width / 2f, layout.size.height / 2f)) {
-                                drawText(layout)
+                        translate(f.x + dx - s / 2f, f.y - s / 2f) {
+                            rotate(if (f.bee) 0f else sin(f.rot) * 17f, pivot = Offset(s / 2f, s / 2f)) {
+                                drawImage(img, dstOffset = IntOffset.Zero, dstSize = IntSize(px, px))
                             }
                         }
                     }
-                    val basket = measurer.measure("🧺", TextStyle(fontSize = (s * 1.7f / density).sp))
-                    drawText(basket, topLeft = Offset(bx * size.width - basket.size.width / 2f, size.height - s * 1.1f - basket.size.height / 2f))
+                    val bw = (s * 2.1f).toInt()
+                    drawImage(
+                        basketImg,
+                        dstOffset = IntOffset((bx * size.width - bw / 2f).toInt(), (size.height - s * 1.1f - bw * 0.55f).toInt()),
+                        dstSize = IntSize(bw, bw)
+                    )
                     if (flash > 0f) drawRect(KColors.Red.copy(alpha = flash))
                     drawParticles(parts, lastDt)
                 }
